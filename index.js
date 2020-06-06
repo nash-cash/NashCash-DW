@@ -43,11 +43,11 @@ const TurtleCoind = function (opts) {
   this.webSocketPassword = opts.webSocketPassword || false
 
   // Begin TurtleCoind options
-  this.path = opts.path || path.resolve(__dirname, './NashCashd' + ((os.platform() === 'win32') ? '.exe' : ''))
+  this.path = opts.path || path.resolve(__dirname, 'NashCashd' + ((os.platform() === 'win32') ? '.exe' : ''))
   this.dataDir = opts.dataDir || path.resolve(os.homedir(), './.NashCash')
-  this.logFile = opts.logFile || path.resolve(__dirname, './NashCashd.log')
+  this.logFile = opts.logFile || path.resolve(__dirname, 'NashCashd.log')
   this.logLevel = opts.logLevel || 2
-  this.enableCors = opts.enableCors || true
+  this.enableCors="*"
   this.enableBlockExplorer = (typeof opts.enableBlockExplorer === 'undefined') ? true : opts.enableBlockExplorer
   this.enableBlockExplorerDetailed = (typeof opts.enableBlockExplorerDetailed === 'undefined') ? true : opts.enableBlockExplorerDetailed
   this.loadCheckpoints = opts.loadCheckpoints || false
@@ -69,6 +69,7 @@ const TurtleCoind = function (opts) {
   this.dbCompression = (typeof opts.dbCompression === 'undefined') ? true : opts.dbCompression
   this.feeAddress = opts.feeAddress || false
   this.feeAmount = opts.feeAmount || 0
+  this.leveldb = opts.leveldb || true
 
   // starting sanity checks
   this._rpcQueryIp = (this.rpcBindIp === '0.0.0.0') ? '127.0.0.1' : this.rpcBindIp
@@ -150,7 +151,7 @@ TurtleCoind.prototype.start = function () {
       return false
     }
   }
-  this.emit('info', 'Attempting to start NashCashd-ha...')
+  this.emit('info', 'Attempting to start NashCash-ha...')
   if (!fs.existsSync(this.path)) {
     this.emit('error', '************************************************')
     this.emit('error', util.format('%s could not be found', this.path))
@@ -382,6 +383,7 @@ TurtleCoind.prototype._buildargs = function () {
   if (this.dbCompression) args = util.format('%s --db-enable-compression', args)
   if (this.feeAddress) args = util.format('%s --fee-address %s', args, this.feeAddress)
   if (this.feeAmount !== 0) args = util.format('%s --fee-amount %s', args, this.feeAmount)
+  if (this.leveldb) args = util.format ('%s --db-enable-level-db', args, this.leveldb)
   return args.split(' ')
 }
 
